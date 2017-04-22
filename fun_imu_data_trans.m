@@ -1,7 +1,7 @@
 function [ data_imu ] = fun_imu_data_trans( data_imu )
-% Y1Ä£×é
+% Y1æ¨¡ç»„
     one_G = 9.80665; 
-    % Y1Ä£×éµÄ¼ÓËÙ¶È¼ÆĞ£Õı²ÎÊı
+    % Y1æ¨¡ç»„çš„åŠ é€Ÿåº¦è®¡æ ¡æ­£å‚æ•°
     A0 = [0.0628    0.0079   -0.0003]';
     A1 = [  1.0011    0.0028   -0.0141;
            -0.0161    1.0005    0.0181;
@@ -24,9 +24,9 @@ function [ data_imu ] = fun_imu_data_trans( data_imu )
     % time
     imu_time = data_imu(1, :);
 
-    % Y1Ä£×é
+    % Y1æ¨¡ç»„
     if acc_cal_tmp(1,1) < -0.5*one_G
-        % ĞÂµÄÉãÏñÍ·
+        % æ–°çš„æ‘„åƒå¤´
         acc_cal(1,:) = -acc_cal_tmp(3,:);
         acc_cal(2,:) = acc_cal_tmp(2,:);
         acc_cal(3,:) = acc_cal_tmp(1,:);
@@ -34,7 +34,7 @@ function [ data_imu ] = fun_imu_data_trans( data_imu )
         gyro_cal(2,:) = gyro_cal_tmp(2,:);
         gyro_cal(3,:) = gyro_cal_tmp(1,:);        
     else
-        % ¾ÉµÄÉãÏñÍ·
+        % æ—§çš„æ‘„åƒå¤´
         acc_cal(1,:) = -acc_cal_tmp(3,:);
         acc_cal(2,:) = -acc_cal_tmp(2,:);
         acc_cal(3,:) = -acc_cal_tmp(1,:);

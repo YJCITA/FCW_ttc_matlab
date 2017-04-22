@@ -9,29 +9,47 @@
 %  增加目标车辆横向距离和速度的估计--初步判断横向距离估计很不准
 %% 2017.04.06 增加radar ttc
 %% 2017.04.11 目前策略对误报已经有较好控制  对漏报（本质不一定是漏报的场景，有待讨论）
+% 批量跑一下别的数据
+%% 2017.04.22 增加直接的cpp结果比较
 clc
 clear all
 close all
 
 %% 数据导入
-% 遍历文件夹
-% maindir = 'F:\数据\FCW\0321_vison_radar\nj';
-% maindir = 'F:\数据\FCW\0321_vison_radar\radar';
-maindir = 'F:\数据\FCW\0321_vison_radar\mobileye_FCW'; % mobileye fcw
-% maindir = 'F:\数据\FCW\0321_vison_radar\acc_track'; % 测试KF跟踪性能
+base_dir = '/home/yj/bak/data/fcw/C++_compare';
+% run_file = '2016.11.23秦皇岛——锦州';  
+run_file = 'test_data';   % 新的代码，初始测试程序
+cpp_data = [base_dir, '/cpp_data/', run_file];
+xuhan_middle_data = [base_dir, '/xuhan_middle_data/', run_file];
 
-sub_l1_dir  = dir( maindir );
-% 一级目录
-for l1_i = 1 : length( sub_l1_dir )
-    if( isequal( sub_l1_dir(l1_i).name, '.' )|| isequal( sub_l1_dir(l1_i).name, '..')||  ~sub_l1_dir(l1_i).isdir)               % 如果不是目录则跳过
-        continue;
-    end
+is_search_dir = 0; % 1:代表遍历main路径下的所有文件夹  0：只是找main下面的文件
+if is_search_dir
+    sub_l1_dir = dir( cpp_data );
+    dir_NUM = length( sub_l1_dir );
+else
+    sub_l1_dir = [];
+    dir_NUM = 1;
+end
+% 一级目录 
+for l1_i = 1 : dir_NUM
+%     if( isequal( sub_l1_dir(l1_i).name, '.' )|| isequal( sub_l1_dir(l1_i).name, '..')||  ~sub_l1_dir(l1_i).isdir) % 如果不是目录则跳过
+%         continue;
+%     end
     for l2_i = 1 : 1
-        subdirpath = fullfile( maindir, sub_l1_dir(l1_i).name, '*.critical' );
+        if is_search_dir
+            subdirpath = fullfile( cpp_data, sub_l1_dir(l1_i).name, '*.kf_result.txt' ); % 获取cpp计算结果的文件名
+        else
+            subdirpath = fullfile( cpp_data, '*.kf_result.txt' ); % 只跑当前路径下txt
+        end
+        
         txt_dir = dir( subdirpath );               % 子文件夹下找后缀为txt的文件
         for txt_i = 1:length(txt_dir)
-            vision_data_addr = fullfile( maindir, sub_l1_dir(l1_i).name, txt_dir(txt_i).name);
-            raw_log_addr = [vision_data_addr(1:end-8), 'log-speed.ini'];
+            str_line_raw = regexp(txt_dir(txt_i).name, '\.', 'split'); %以空格为特征分割字符串
+            mp4_name = str_line_raw{1};
+            vision_data_addr = [xuhan_middle_data, '/', mp4_name, '.mp4.critical']; % xuhan给出的fcw中间结果
+            raw_log_addr = [xuhan_middle_data, '/', mp4_name, '.mp4.log-speed.ini']; % 抽取的速度数据，这个加载有点慢
+%             raw_log_addr = [xuhan_middle_data, '/', mp4_name, '.mp4.log.txt']; % 带imu speed的数据
+            cpp_ttc_addr = [cpp_data, '/', mp4_name, '.kf_result.txt']; % cpp程序处理的结果
             fid_vision_log = fopen(vision_data_addr, 'r');
             fid_raw_log = fopen(raw_log_addr, 'r'); % 原始的log
             if ~fid_vision_log || ~fid_raw_log
@@ -99,6 +117,9 @@ for l1_i = 1 : length( sub_l1_dir )
                 if is_first_read_timestamp
                     % 用log的时间戳比较靠谱
                     lineData_raw_log = fgetl(fid_raw_log);
+                    if lineData_raw_log == -1
+                        break;
+                    end
                     exp1 = ' ';
                     str_line_log_raw = regexp(lineData_raw_log, exp1, 'split'); %以空格为特征分割字符串
                     time_s = str2num(str_line_log_raw{1,1});
@@ -119,8 +140,7 @@ for l1_i = 1 : length( sub_l1_dir )
                     radar_range_vel = str2num(str_line_raw{1,16+2});
                     radar_range_acc = 0; %str2num(str_line_raw{1,14+2});
                     radar_horiz_dist = str2num(str_line_raw{1,18+2});
-                    radar_data = [radar_range radar_range_vel radar_range_acc radar_horiz_dist]';
-                    
+                    radar_data = [radar_range radar_range_vel radar_range_acc radar_horiz_dist]';                   
                     radar_ttc = str2num(str_line_raw{1,17+2});
                 end
                 
@@ -153,7 +173,6 @@ for l1_i = 1 : length( sub_l1_dir )
                                 speed_cur = str2num(str_line_log_raw{1, 24})/3.6;               
                             end
                         end
-
                         
                         % 判断上一个速度时间戳是否匹配上（因为speed更新比较慢，所以不能每次进来比较就先读取数据，很可能会一直匹配不上）
                         dt_imu_camera = time_log_pre - image_timestamp_cur;
@@ -169,12 +188,7 @@ for l1_i = 1 : length( sub_l1_dir )
                             time_log_pre = time_log;
                             str_line_data_flag = str_line_log_raw{1,3};
                             if strcmp(str_line_data_flag, 'brake_signal')
-                                speed_cur = str2num(str_line_log_raw{1, 24})/3.6; 
-                                % 判断时间戳是否已经匹配上
-                                dt_imu_camera = time_log - image_timestamp_cur;
-                                if dt_imu_camera > -0.1
-                                    is_imu_match_camera = 1; % 数据已经匹配
-                                end                            
+                                speed_cur = str2num(str_line_log_raw{1, 24})/3.6;                    
                             end
                         end                                     
                      end
@@ -362,83 +376,134 @@ for l1_i = 1 : length( sub_l1_dir )
                     mobileye_fcw_state = 0;
                 end        
             end
-            
+        
+        is_plot_ttc_info = 0;
         % 大于100 才不是空文件
-        if read_txt_line >10             
-            h = figure();
-%             figure('visible','off')   
-            set(h,'outerposition',get(0,'screensize'));
-            % 车距
-            ax1 = subplot(4,1,1);
-            plot(save_vision_raw(1,:), save_vision_raw(2,:), '.'); % vision range 量测
+        if read_txt_line >10 
+            if is_plot_ttc_info            
+                h = figure();
+                set(h,'outerposition',get(0,'screensize'));
+                % 车距
+                ax1 = subplot(4,1,1);
+                plot(save_vision_raw(1,:), save_vision_raw(2,:), '.'); % vision range 量测
+                hold on;
+                plot(save_Xk(1,:), save_Xk(2,:), '.'); % range-estimate
+                plot(save_radar_data(1,:), save_radar_data(2,:), '.'); % radar-range
+                plot(save_speed_car(1,:), save_speed_car(2,:), '.'); % speed-car
+                NUM = length(save_radar_data(1,:));
+                plot(save_radar_data(1,:), ones(1,NUM)*55)
+                grid on;
+                legend({'vision-range-measure-raw','range-estimate', 'radar-range', 'speed-car', 'line-55m'},'Location','northeast','FontSize',10);
+                legend('boxoff')
+                vision_data_addr_t = vision_data_addr;
+                str_name = sprintf('log文件: %s \n 车距 ', vision_data_addr_t);
+                ylim([-1, 100])
+                xlim([0, 350]);
+                title(str_name);
+
+                % 速度 & 加速度 &本车速度
+                ax2 = subplot(4,1,2);
+                plot(save_Xk(1,:), save_Xk(3, :), '.'); % vel estimation
+                hold on;
+                plot(save_Xk(1,:), save_Xk(4,:), '.'); % acc estimation
+                plot(save_radar_data(1,:), -save_radar_data(3,:), '.'); % vel-radar
+                plot(save_radar_data(1,:), -save_radar_data(4,:), '.'); % acc-radar
+                grid on;
+                legend({'vel-estimation','acc-estimation', 'vel-radar', 'acc-radar'},'Location','northeast','FontSize',10);
+                legend('boxoff')
+                xlim([0, 350]);
+                title('速度&加速度')
+
+                % 速度 & 加速度 &本车速度
+                ax3 = subplot(4,1,3);
+                hold on;
+
+                plot(save_Xk(1,:), save_Xk_h(2,:), '.'); % vision horizon
+                plot(save_Xk(1,:), save_Xk_h(3,:), '.'); % vision horizon vel
+                plot(save_tt_horizon(1,:), save_tt_horizon(2,:), '.'); % ttc_horizon    
+                NUM = length(save_tt_horizon(1,:));
+                plot(save_tt_horizon(1,:), ones(1,NUM)*3)
+                ylim([-5,5])
+                grid on;
+                legend({ 'vision-horizon*10', 'vision-horizon-vel*10', 'ttc-horizon*10','3'},'Location','northeast','FontSize',10);
+                legend('boxoff')
+                xlim([0, 350]);
+                title('横向距离&本车速度')
+
+                % ttc fcw
+                ax4 = subplot(4,1,4);
+                NUM1 = length(save_ttc);
+                plot(save_ttc(1,:), save_ttc(2,:), '.'); % ttc
+                hold on;
+                plot(save_radar_ttc(1,:), save_radar_ttc(2,:), '.'); % ttc_radar      
+                plot(save_fcw_state(1,:), save_fcw_state(2,:)*6); % fcw_minieye    
+                plot(save_fcw_state(1,:), save_fcw_state_mobileye(2,:)*5); % fcw_mobileye              
+                NUM = length(save_ttc(1,:));
+                plot(save_ttc(1,:), ones(1,NUM)*ttc_threhold)
+                grid on;
+                legend({'ttc', 'ttc-radar', 'fcw-minieye','fcw-mobileye', 'ttc-3.0'},'Location','northeast','FontSize',10);
+                legend('boxoff')
+                ylim([-1, 10]);
+                xlim([0, 350]);
+                str_name = sprintf('ttc&fcw');
+                title(str_name);
+                linkaxes([ax1,ax2,ax3,ax4], 'x'); % 同步子图的坐标轴
+
+                % 保存figure
+    %             filename=[vision_data_addr_t, '--KF.fig'];
+                filename=[vision_data_addr_t, '--KF.png'];
+                saveas(h,filename)
+                close(h)   
+            end
+            
+        %% 画图比较matlab和cpp计算的结果
+            kf_result = load(cpp_ttc_addr)';
+            diif_time = 0;
+            % ttc fcw
+            figure()
+            set(gcf,'outerposition',get(0,'screensize'));
+            
+            subplot(3,1,1)
             hold on;
-            plot(save_Xk(1,:), save_Xk(2,:), '.'); % range-estimate
-            plot(save_radar_data(1,:), save_radar_data(2,:), '.'); % radar-range
-            plot(save_speed_car(1,:), save_speed_car(2,:), '.'); % speed-car
-            NUM = length(save_radar_data(1,:));
-            plot(save_radar_data(1,:), ones(1,NUM)*55)
+            plot(save_Xk(1,:), save_Xk(2,:), '.'); % vision vertial
+            plot(save_Xk(1,:), save_Xk(3,:), '.'); % vision vertial vel
+            plot(kf_result(1,:)+diif_time, kf_result(5,:), '.'); % vision vertial
+            plot(kf_result(1,:)+diif_time, kf_result(6,:), '.'); % vision vertial vel
             grid on;
-            legend({'vision-range-measure-raw','range-estimate', 'radar-range', 'speed-car', 'line-55m'},'Location','northeast','FontSize',10);
-            legend('boxoff')
-            vision_data_addr_t = vision_data_addr;
-            str_name = sprintf('log文件: %s \n 车距 ', vision_data_addr_t);
-            ylim([-1, 100])
-            xlim([0, 350]);
-            title(str_name);
-            
-            % 速度 & 加速度 &本车速度
-            ax2 = subplot(4,1,2);
-            plot(save_Xk(1,:), save_Xk(3, :), '.'); % vel estimation
-            hold on;
-            plot(save_Xk(1,:), save_Xk(4,:), '.'); % acc estimation
-            plot(save_radar_data(1,:), -save_radar_data(3,:), '.'); % vel-radar
-            plot(save_radar_data(1,:), -save_radar_data(4,:), '.'); % acc-radar
-            grid on;
-            legend({'vel-estimation','acc-estimation', 'vel-radar', 'acc-radar'},'Location','northeast','FontSize',10);
+            legend({ 'vision-vertial', 'vision-vertial-vel', 'vision-vertial-cpp', 'vision-vertial-vel-cpp'},'Location','northeast','FontSize',10);
             legend('boxoff')
             xlim([0, 350]);
-            title('速度&加速度')
+            title('纵向距离')
             
-            % 速度 & 加速度 &本车速度
-            ax3 = subplot(4,1,3);
+            subplot(3,1,2)
             hold on;
-            
             plot(save_Xk(1,:), save_Xk_h(2,:), '.'); % vision horizon
             plot(save_Xk(1,:), save_Xk_h(3,:), '.'); % vision horizon vel
-            plot(save_tt_horizon(1,:), save_tt_horizon(2,:), '.'); % ttc_horizon    
-            NUM = length(save_tt_horizon(1,:));
-            plot(save_tt_horizon(1,:), ones(1,NUM)*3)
-            ylim([-5,5])
+            plot(kf_result(1,:)+diif_time, kf_result(3,:), '.'); % vision horizon
+            plot(kf_result(1,:)+diif_time, kf_result(4,:), '.'); % vision horizon vel
             grid on;
-            legend({ 'vision-horizon*10', 'vision-horizon-vel*10', 'ttc-horizon*10','3'},'Location','northeast','FontSize',10);
+            legend({ 'vision-horizon', 'vision-horizon-vel', 'vision-horizon-cpp', 'vision-horizon-vel-cpp'},'Location','northeast','FontSize',10);
             legend('boxoff')
             xlim([0, 350]);
-            title('横向距离&本车速度')
-            
-            % ttc fcw
-            ax4 = subplot(4,1,4);
+            title('横向距离')
+           
+            subplot(3,1,3)
             NUM1 = length(save_ttc);
             plot(save_ttc(1,:), save_ttc(2,:), '.'); % ttc
             hold on;
-            plot(save_radar_ttc(1,:), save_radar_ttc(2,:), '.'); % ttc_radar      
-            plot(save_fcw_state(1,:), save_fcw_state(2,:)*6); % fcw_minieye    
-            plot(save_fcw_state(1,:), save_fcw_state_mobileye(2,:)*5); % fcw_mobileye              
+            % plot(save_radar_ttc(1,:), save_radar_ttc(2,:), '.'); % ttc_radar      
+            % plot(save_fcw_state(1,:), save_fcw_state(2,:)*6); % fcw_minieye    
+            % plot(save_fcw_state(1,:), save_fcw_state_mobileye(2,:)*5); % fcw_mobileye              
             NUM = length(save_ttc(1,:));
             plot(save_ttc(1,:), ones(1,NUM)*ttc_threhold)
+            plot(kf_result(1,:)+diif_time, kf_result(2,:), '.'); % ttc_cpp  
             grid on;
-            legend({'ttc', 'ttc-radar', 'fcw-minieye','fcw-mobileye', 'ttc-3.0'},'Location','northeast','FontSize',10);
+            legend({'ttc', 'ttc-3.0', 'ttc-cpp'},'Location','northeast','FontSize',10);
             legend('boxoff')
-            str_name = sprintf('ttc&fcw');
-            ylim([-1, 10]);
+            ylim([-1, 20]);
             xlim([0, 350]);
-            title(str_name);
-            linkaxes([ax1,ax2,ax3,ax4], 'x'); % 同步子图的坐标轴
-            
-            % 保存figure
-%             filename=[vision_data_addr_t, '--KF.fig'];
-            filename=[vision_data_addr_t, '--KF.png'];
-            saveas(h,filename)
-            close(h)   
+            title([run_file, ' ', mp4_name]);
+
             
            %% 分析KF
 %             h = figure();

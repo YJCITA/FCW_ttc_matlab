@@ -1,4 +1,4 @@
-% Ò»²½EKF
+% ä¸€æ­¥EKF
 function [Xk, Pk] = fun_CS_KF(Xk_1, Pk_1, z, Q, R, F, H, alpha, a_max, T)
     x_dimension = length(Xk_1);
     In = eye(x_dimension);
@@ -6,13 +6,13 @@ function [Xk, Pk] = fun_CS_KF(Xk_1, Pk_1, z, Q, R, F, H, alpha, a_max, T)
     E_a = Xk_1(3);
     [Xk_predict Q_new] = fun_CS_model(Xk_1, E_a, alpha, a_max, T);
     
-    Xk_predict1 = F*Xk_1;               % 1.×´Ì¬Ò»²½Ô¤²â    
-    Pk_predict = F*Pk_1*F' + Q_new;        % 2.Ô¤²âÎó²îĞ­·½²îÕó
-    S = H*Pk_predict*H' + R;           % ĞÅÏ¢Ğ­·½²îÕó
-    Kk = Pk_predict*H'*(S^-1);          %3. ÔöÒæ¾ØÕó
+    Xk_predict1 = F*Xk_1;               % 1.çŠ¶æ€ä¸€æ­¥é¢„æµ‹    
+    Pk_predict = F*Pk_1*F' + Q_new;        % 2.é¢„æµ‹è¯¯å·®åæ–¹å·®é˜µ
+    S = H*Pk_predict*H' + R;           % ä¿¡æ¯åæ–¹å·®é˜µ
+    Kk = Pk_predict*H'*(S^-1);          %3. å¢ç›ŠçŸ©é˜µ
     Z_predict = H*Xk_predict;    
     z_info = z - Z_predict;
     tt1 = Kk*z_info;
-    Xk = Xk_predict + Kk*z_info;% 4.×´Ì¬¹À¼Æ
-    Pk = (In - Kk*H)*Pk_predict;     % 5.Ğ­·½²î¹À¼Æ
+    Xk = Xk_predict + Kk*z_info;% 4.çŠ¶æ€ä¼°è®¡
+    Pk = (In - Kk*H)*Pk_predict;     % 5.åæ–¹å·®ä¼°è®¡
 end

@@ -1,11 +1,11 @@
-% ¶ÁÈ¡bounding box³öÀ´µÄÔ­Ê¼¾àÀëÊı¾İºÍÀ×´ïµÄÊı¾İ½øĞĞ¶Ô±È
+% è¯»å–bounding boxå‡ºæ¥çš„åŸå§‹è·ç¦»æ•°æ®å’Œé›·è¾¾çš„æ•°æ®è¿›è¡Œå¯¹æ¯”
 
 clc
 clear all
 close all
 
-%% Êı¾İµ¼Èë
-source_addr = 'F:/Êı¾İ/FCW/case1/log';
+%% æ•°æ®å¯¼å…¥
+source_addr = 'F:/æ•°æ®/FCW/case1/log';
 % radar
 data_addr = [source_addr , '/39946.log-radar.ini'];
 data_t = load(data_addr)';
@@ -16,7 +16,7 @@ radar_data = [time_t; data_t(3:end, :)];
 data_addr = [source_addr , '/39946.vision_dist'];
 vision_range_data = load(data_addr)';
 
-% Í³Ò»Ò»ÏÂÊ±¼äÖá  ´Ó0¿ªÊ¼
+% ç»Ÿä¸€ä¸€ä¸‹æ—¶é—´è½´  ä»0å¼€å§‹
 time_start = min(vision_range_data(1,1), radar_data(1,1));
 radar_data(1,:) = radar_data(1,:) - time_start;
 vision_range_data(1,:) = vision_range_data(1,:) - time_start;
@@ -28,7 +28,7 @@ hold on;
 plot(vision_range_data(1,:), vision_range_data(2,:));
 grid on;
 legend('radar', 'vision-raw');
-title('³µ¾à');
+title('è½¦è·');
 
 % figure()
 % subplot(2,1,1)
@@ -37,4 +37,4 @@ title('³µ¾à');
 % % subplot(2,1,2)
 % hold on
 % plot(vision_range_data(1,2803:end), vision_range_data(2,2803:end));
-% title('³µ¾à');
+% title('è½¦è·');

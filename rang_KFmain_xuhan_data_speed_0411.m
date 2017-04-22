@@ -9,6 +9,7 @@
 %  增加目标车辆横向距离和速度的估计--初步判断横向距离估计很不准
 %% 2017.04.06 增加radar ttc
 %% 2017.04.11 目前策略对误报已经有较好控制  对漏报（本质不一定是漏报的场景，有待讨论）
+% 批量跑一下别的数据
 clc
 clear all
 close all
@@ -17,21 +18,42 @@ close all
 % 遍历文件夹
 % maindir = 'F:\数据\FCW\0321_vison_radar\nj';
 % maindir = 'F:\数据\FCW\0321_vison_radar\radar';
-maindir = 'F:\数据\FCW\0321_vison_radar\mobileye_FCW'; % mobileye fcw
 % maindir = 'F:\数据\FCW\0321_vison_radar\acc_track'; % 测试KF跟踪性能
+% maindir = 'F:\数据\FCW\0321_vison_radar\mobileye_FCW'; % mobileye fcw
+% maindir = 'F:\数据\FCW\0321_vison_radar\radar\2016.11.22天津——秦皇岛'; % 一般数据集测试
+maindir = '/home/yj/bak/data/fcw/C++_compare/fcw_new_data';
 
-sub_l1_dir  = dir( maindir );
-% 一级目录
-for l1_i = 1 : length( sub_l1_dir )
-    if( isequal( sub_l1_dir(l1_i).name, '.' )|| isequal( sub_l1_dir(l1_i).name, '..')||  ~sub_l1_dir(l1_i).isdir)               % 如果不是目录则跳过
-        continue;
-    end
+
+is_search_dir = 0; % 1:代表遍历main路径下的所有文件夹  0：只是找main下面的文件
+
+if is_search_dir
+    sub_l1_dir = dir( maindir );
+    dir_NUM = length( sub_l1_dir );
+else
+    sub_l1_dir = [];
+    dir_NUM = 1;
+end
+% 一级目录 
+for l1_i = 1 : dir_NUM
+%     if( isequal( sub_l1_dir(l1_i).name, '.' )|| isequal( sub_l1_dir(l1_i).name, '..')||  ~sub_l1_dir(l1_i).isdir)               % 如果不是目录则跳过
+%         continue;
+%     end
     for l2_i = 1 : 1
-        subdirpath = fullfile( maindir, sub_l1_dir(l1_i).name, '*.critical' );
+        if is_search_dir
+            subdirpath = fullfile( maindir, sub_l1_dir(l1_i).name, '*.critical' ); %  遍历一级路径
+        else
+            subdirpath = fullfile( maindir, '*.critical' ); % 只跑当前路径下txt
+        end
+        
         txt_dir = dir( subdirpath );               % 子文件夹下找后缀为txt的文件
         for txt_i = 1:length(txt_dir)
-            vision_data_addr = fullfile( maindir, sub_l1_dir(l1_i).name, txt_dir(txt_i).name);
+            if is_search_dir
+                vision_data_addr = fullfile( maindir, sub_l1_dir(l1_i).name, txt_dir(txt_i).name);
+            else
+                vision_data_addr = fullfile( maindir, txt_dir(txt_i).name ); % 只跑当前路径下txt
+            end
             raw_log_addr = [vision_data_addr(1:end-8), 'log-speed.ini'];
+%             raw_log_addr = [vision_data_addr(1:end-8), 'log.txt'];
             fid_vision_log = fopen(vision_data_addr, 'r');
             fid_raw_log = fopen(raw_log_addr, 'r'); % 原始的log
             if ~fid_vision_log || ~fid_raw_log
@@ -99,6 +121,9 @@ for l1_i = 1 : length( sub_l1_dir )
                 if is_first_read_timestamp
                     % 用log的时间戳比较靠谱
                     lineData_raw_log = fgetl(fid_raw_log);
+                    if lineData_raw_log == -1
+                        break;
+                    end
                     exp1 = ' ';
                     str_line_log_raw = regexp(lineData_raw_log, exp1, 'split'); %以空格为特征分割字符串
                     time_s = str2num(str_line_log_raw{1,1});
@@ -119,8 +144,7 @@ for l1_i = 1 : length( sub_l1_dir )
                     radar_range_vel = str2num(str_line_raw{1,16+2});
                     radar_range_acc = 0; %str2num(str_line_raw{1,14+2});
                     radar_horiz_dist = str2num(str_line_raw{1,18+2});
-                    radar_data = [radar_range radar_range_vel radar_range_acc radar_horiz_dist]';
-                    
+                    radar_data = [radar_range radar_range_vel radar_range_acc radar_horiz_dist]';                   
                     radar_ttc = str2num(str_line_raw{1,17+2});
                 end
                 
@@ -153,7 +177,6 @@ for l1_i = 1 : length( sub_l1_dir )
                                 speed_cur = str2num(str_line_log_raw{1, 24})/3.6;               
                             end
                         end
-
                         
                         % 判断上一个速度时间戳是否匹配上（因为speed更新比较慢，所以不能每次进来比较就先读取数据，很可能会一直匹配不上）
                         dt_imu_camera = time_log_pre - image_timestamp_cur;
@@ -169,12 +192,7 @@ for l1_i = 1 : length( sub_l1_dir )
                             time_log_pre = time_log;
                             str_line_data_flag = str_line_log_raw{1,3};
                             if strcmp(str_line_data_flag, 'brake_signal')
-                                speed_cur = str2num(str_line_log_raw{1, 24})/3.6; 
-                                % 判断时间戳是否已经匹配上
-                                dt_imu_camera = time_log - image_timestamp_cur;
-                                if dt_imu_camera > -0.1
-                                    is_imu_match_camera = 1; % 数据已经匹配
-                                end                            
+                                speed_cur = str2num(str_line_log_raw{1, 24})/3.6;                    
                             end
                         end                                     
                      end

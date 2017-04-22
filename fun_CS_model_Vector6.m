@@ -1,13 +1,13 @@
-% CSÔË¶¯Ä£ĞÍ ×´Ì¬±äÁ¿ÊÇ6Î¬¶È
+% CSè¿åŠ¨æ¨¡å‹ çŠ¶æ€å˜é‡æ˜¯6ç»´åº¦
 function [Xk_new Q] = fun_CS_model_Vector6(Xk, E_a, alpha, a_max, T, F, U)
 % Xk = [x x' x''];
-% alpha: »ú¶¯ÆµÂÊ
-% E_a£º ¼ÓËÙ¶ÈÆ½¾ùÖµ
-% aX_max,aY_max : [-max, +max] ×î´ó×îĞ¡¼ÓËÙ¶È
-    acc_cur = Xk(3); % µ±Ç°¹À¼ÆµÄ¼ÓËÙ¶È
+% alpha: æœºåŠ¨é¢‘ç‡
+% E_aï¼š åŠ é€Ÿåº¦å¹³å‡å€¼
+% aX_max,aY_max : [-max, +max] æœ€å¤§æœ€å°åŠ é€Ÿåº¦
+    acc_cur = Xk(3); % å½“å‰ä¼°è®¡çš„åŠ é€Ÿåº¦
     O33 = diag([ 0 0 0 ]);
     O31 = [ 0 0 0]';
-%% Q:ÏµÍ³ÔëÉù·½²îÕó ¸üĞÂ
+%% Q:ç³»ç»Ÿå™ªå£°æ–¹å·®é˜µ æ›´æ–°
     q11 = (1-exp(-2*alpha*T)+2*alpha*T+(2*alpha^3*T^3)/3-2*alpha^2*T^2-4*alpha*T*exp(-alpha*T))/(2*alpha^4);
     q12 = (exp(-2*alpha*T)+1-2*exp(-alpha*T)+2*alpha*T*exp(-alpha*T)-2*alpha*T+alpha^2*T^2)/(2*alpha^3);
     q13 = (1-exp(-2*alpha*T)-2*alpha*T*exp(-alpha*T))/(2*alpha^2);
@@ -15,12 +15,12 @@ function [Xk_new Q] = fun_CS_model_Vector6(Xk, E_a, alpha, a_max, T, F, U)
     q23 = (exp(-2*alpha*T)+1-2*exp(-alpha*T))/(2*alpha);
     q33 = (1-exp(-2*alpha*T))/(2); 
       
-    subQ = [ q11 q12 q13   %  ?? ÊÇ·ñÕûÌå subQ = a*subQ;????
+    subQ = [ q11 q12 q13   %  ?? æ˜¯å¦æ•´ä½“ subQ = a*subQ;????
              q12 q22 q23
              q13 q23 q33 ];
      
-    if (Xk(3) >= 0 ) % ¸ù¾İµ±Ç°¼ÓËÙ¶ÈµÄÕı¸º??Xk1??  µ÷Õû¼ÓËÙ¶È·½²î
-        Ra_x = (4-pi)*(a_max(2) - Xk(3))^2/pi; % ax_max=[-ax_max, ax_max]X·½ÏòµÄ×î´ó¼ÓËÙ¶È
+    if (Xk(3) >= 0 ) % æ ¹æ®å½“å‰åŠ é€Ÿåº¦çš„æ­£è´Ÿ??Xk1??  è°ƒæ•´åŠ é€Ÿåº¦æ–¹å·®
+        Ra_x = (4-pi)*(a_max(2) - Xk(3))^2/pi; % ax_max=[-ax_max, ax_max]Xæ–¹å‘çš„æœ€å¤§åŠ é€Ÿåº¦
     else
         Ra_x = (4-pi)*(a_max(1) + Xk(3))^2/pi;
     end
@@ -34,13 +34,13 @@ function [Xk_new Q] = fun_CS_model_Vector6(Xk, E_a, alpha, a_max, T, F, U)
     subQ_y = 2*Ra_y*subQ;
     Q = [subQ_x   O33;
            O33   subQ_y ];
-%% ×´Ì¬¸üĞÂ
+%% çŠ¶æ€æ›´æ–°
 %     
-%     Fai = [ 1  T  (-1+alpha*T+exp(-alpha*T))/(alpha^2);  % Ò»¸öÎ¬¶È
+%     Fai = [ 1  T  (-1+alpha*T+exp(-alpha*T))/(alpha^2);  % ä¸€ä¸ªç»´åº¦
 %                0  1  (1-exp(-alpha*T))/alpha;
 %                0  0  exp(-alpha*T) ];      
 % 
-%     U = [ (-T + alpha*T^2 + ( 1-exp(-alpha*T) )/alpha )/ alpha;  % Ò»¸öÎ¬¶È
+%     U = [ (-T + alpha*T^2 + ( 1-exp(-alpha*T) )/alpha )/ alpha;  % ä¸€ä¸ªç»´åº¦
 %               T - ( 1-exp(-alpha*T) )/alpha;
 %                1 - exp(-alpha*T) ]; 
      

@@ -1,5 +1,5 @@
-%% FFT ²âÊÔ
-% ÀûÓÃÊÖ¶¯Éú³Éº¬ÓĞ¹Ì¶¨ÆµÂÊµÄÀëÉ¢Êı¾İ£¬½øĞĞFFTºÍµÍÍ¨±ä»¯ÑéÖ¤
+%% FFT æµ‹è¯•
+% åˆ©ç”¨æ‰‹åŠ¨ç”Ÿæˆå«æœ‰å›ºå®šé¢‘ç‡çš„ç¦»æ•£æ•°æ®ï¼Œè¿›è¡ŒFFTå’Œä½é€šå˜åŒ–éªŒè¯
 close all
 clear all
 clc
@@ -25,26 +25,26 @@ end
 
 
 %% FFT
-% Ô­Ê¼Êı¾İ
+% åŸå§‹æ•°æ®
 L = length(data);
-Y = fft(data, L);%½øĞĞfft±ä»»
+Y = fft(data, L);%è¿›è¡Œfftå˜æ¢
 P2 = abs(Y/L);
 P1 = P2(1 : L/2+1);
 P1(2:end-1) = 2*P1(2:end-1);
 f = Fs*(0:(L/2))/L;
 figure();
-plot(f,P1);%×öÆµÆ×Í¼
+plot(f,P1);%åšé¢‘è°±å›¾
 hold on;
 
-% µÍÍ¨Ö®ºóµÄÊı¾İ
+% ä½é€šä¹‹åçš„æ•°æ®
 L = length(data_new);
-Y = fft(data_new, L);%½øĞĞfft±ä»»
+Y = fft(data_new, L);%è¿›è¡Œfftå˜æ¢
 P2 = abs(Y/L);
 P1 = P2(1 : L/2+1);
 P1(2:end-1) = 2*P1(2:end-1);
 f = Fs*(0:(L/2))/L;
 
-plot(f,P1);%×öÆµÆ×Í¼
+plot(f,P1);%åšé¢‘è°±å›¾
 grid on;
 legend('raw', 'lowpass-filter');
 
@@ -55,12 +55,12 @@ legend('raw', 'lowpass-filter');
 % t=0:1/Fs:1;
 % plot(1000*t(1:50),data(1:50));
 % xlabel('time(mm)')
-% title('Ò»ÔªÊ±¼äĞòÁĞÖ±¹ÛÍ¼')
+% title('ä¸€å…ƒæ—¶é—´åºåˆ—ç›´è§‚å›¾')
 %  
 % Y=fft(data,512);
 % Pyy2=Y.*conj(Y)/512;
 % f2=1000*(0:256)/512;
 % subplot(3,1,2);
 % plot(f2,Pyy2(1:257));
-% title('ÀëÉ¢Êı¾İµÄ¸µÁ¢Ò¶ÆµÆ×Í¼')
-% xlabel('ÆµÂÊ£¨Hz£©')
+% title('ç¦»æ•£æ•°æ®çš„å‚…ç«‹å¶é¢‘è°±å›¾')
+% xlabel('é¢‘ç‡ï¼ˆHzï¼‰')

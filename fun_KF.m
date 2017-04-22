@@ -1,16 +1,16 @@
-% Ò»²½EKF
+% ä¸€æ­¥EKF
 function [Xk, Pk] = fun_KF(Xk_1, Pk_1, z, Q, R, F, H)
     x_dimension = length(Xk_1);
     In = eye(x_dimension);
     
-    Xk_predict = F*Xk_1;               % 1.×´Ì¬Ò»²½Ô¤²â    
+    Xk_predict = F*Xk_1;               % 1.çŠ¶æ€ä¸€æ­¥é¢„æµ‹    
     P_tmp = F*Pk_1*F';
-    Pk_predict = F*Pk_1*F' + Q;        % 2.Ô¤²âÎó²îĞ­·½²îÕó
-    S = H*Pk_predict*H' + R;           % ĞÅÏ¢Ğ­·½²îÕó
-    Kk = Pk_predict*H'*(S^-1);          %3. ÔöÒæ¾ØÕó
+    Pk_predict = F*Pk_1*F' + Q;        % 2.é¢„æµ‹è¯¯å·®åæ–¹å·®é˜µ
+    S = H*Pk_predict*H' + R;           % ä¿¡æ¯åæ–¹å·®é˜µ
+    Kk = Pk_predict*H'*(S^-1);          %3. å¢ç›ŠçŸ©é˜µ
     Z_predict = H*Xk_predict;    
     z_residual = z - Z_predict;
 %     tt1 = Kk*residual;
-    Xk = Xk_predict + Kk*z_residual;% 4.×´Ì¬¹À¼Æ
-    Pk = (In - Kk*H)*Pk_predict;     % 5.Ğ­·½²î¹À¼Æ
+    Xk = Xk_predict + Kk*z_residual;% 4.çŠ¶æ€ä¼°è®¡
+    Pk = (In - Kk*H)*Pk_predict;     % 5.åæ–¹å·®ä¼°è®¡
 end

@@ -1,88 +1,88 @@
-%% 2017.03.13 ĞŞ¸Ä³ÌĞòÔö¼Ó¶ÔÊı¾İÅú´¦ÀíµÄÄÜÁ¦
-% ĞŞ¸ÄÄ£ĞÍ ¸Ä±äÎªÔÈ¼ÓËÙÄ£ĞÍ  Ğ§¹û·Ç³£ºÃ
-%% 2017.03.18 ÊÊÓ¦ĞÂµÄÊı¾İ¸ñÊ½£¬Ôö¼ÓÅú´¦ÀíÄÜÁ¦£¬Í³¼ÆÕı±¨ºÍÎó±¨
-% ÒÔbounding box×÷ÎªÁ¿²â½øĞĞKF¸ú×Ù
-%% 2017.03.20  Õâ¸ö°æ±¾Ğ§¹û»¹OK£¬¿¼ÂÇÔö¼ÓÁ¬ĞøµÄºáÏòËÙ¶È¹À¼ÆºÍIMUÅĞ¶Ïµßô¤Çé¿ö£¬È¥µôÎó±¨
-%% 2017.03.21 ÊÊÓ¦Ğìº­µÄÊı¾İ½á¹¹
-%% 2017.03.28 ·ÖÎöKF±¾ÉíÊÇ·ñÊÕÁ²£¨P£©
-%  Ôö¼Ó³µËÙ£¬²é¿´ÊÇ·ñÓĞÀûÓÚËÙ¶È¸ú×ÙµÄÊÕÁ² ÓÃËÙ¶ÈÁ¿²â¶¯Ì¬ĞÔ»áºÃ£¨ÓÈÆäÊÇ¶ÔÓÚ±¾³µ¼Ó¼õËÙ±È½Ï¾çÁÒµÄÊ±ºò£©
-%  Ôö¼ÓÄ¿±ê³µÁ¾ºáÏò¾àÀëºÍËÙ¶ÈµÄ¹À¼Æ--³õ²½ÅĞ¶ÏºáÏò¾àÀë¹À¼ÆºÜ²»×¼
+%% 2017.03.13 ä¿®æ”¹ç¨‹åºå¢åŠ å¯¹æ•°æ®æ‰¹å¤„ç†çš„èƒ½åŠ›
+% ä¿®æ”¹æ¨¡å‹ æ”¹å˜ä¸ºåŒ€åŠ é€Ÿæ¨¡å‹  æ•ˆæœéå¸¸å¥½
+%% 2017.03.18 é€‚åº”æ–°çš„æ•°æ®æ ¼å¼ï¼Œå¢åŠ æ‰¹å¤„ç†èƒ½åŠ›ï¼Œç»Ÿè®¡æ­£æŠ¥å’Œè¯¯æŠ¥
+% ä»¥bounding boxä½œä¸ºé‡æµ‹è¿›è¡ŒKFè·Ÿè¸ª
+%% 2017.03.20  è¿™ä¸ªç‰ˆæœ¬æ•ˆæœè¿˜OKï¼Œè€ƒè™‘å¢åŠ è¿ç»­çš„æ¨ªå‘é€Ÿåº¦ä¼°è®¡å’ŒIMUåˆ¤æ–­é¢ ç°¸æƒ…å†µï¼Œå»æ‰è¯¯æŠ¥
+%% 2017.03.21 é€‚åº”å¾æ¶µçš„æ•°æ®ç»“æ„
+%% 2017.03.28 åˆ†æKFæœ¬èº«æ˜¯å¦æ”¶æ•›ï¼ˆPï¼‰
+%  å¢åŠ è½¦é€Ÿï¼ŒæŸ¥çœ‹æ˜¯å¦æœ‰åˆ©äºé€Ÿåº¦è·Ÿè¸ªçš„æ”¶æ•› ç”¨é€Ÿåº¦é‡æµ‹åŠ¨æ€æ€§ä¼šå¥½ï¼ˆå°¤å…¶æ˜¯å¯¹äºæœ¬è½¦åŠ å‡é€Ÿæ¯”è¾ƒå‰§çƒˆçš„æ—¶å€™ï¼‰
+%  å¢åŠ ç›®æ ‡è½¦è¾†æ¨ªå‘è·ç¦»å’Œé€Ÿåº¦çš„ä¼°è®¡--åˆæ­¥åˆ¤æ–­æ¨ªå‘è·ç¦»ä¼°è®¡å¾ˆä¸å‡†
 clc
 clear all
 close all
 
-%% Êı¾İµ¼Èë
-% ±éÀúÎÄ¼ş¼Ğ
-% maindir = 'F:\Êı¾İ\FCW\0321_vison_radar\nj';
-% maindir = 'F:\Êı¾İ\FCW\0321_vison_radar\radar';
-maindir = 'F:\Êı¾İ\FCW\0321_vison_radar\mobileye_FCW'; % mobileye fcw
-% maindir = 'F:\Êı¾İ\FCW\0321_vison_radar\acc_track'; % ²âÊÔKF¸ú×ÙĞÔÄÜ
+%% æ•°æ®å¯¼å…¥
+% éå†æ–‡ä»¶å¤¹
+% maindir = 'F:\æ•°æ®\FCW\0321_vison_radar\nj';
+% maindir = 'F:\æ•°æ®\FCW\0321_vison_radar\radar';
+maindir = 'F:\æ•°æ®\FCW\0321_vison_radar\mobileye_FCW'; % mobileye fcw
+% maindir = 'F:\æ•°æ®\FCW\0321_vison_radar\acc_track'; % æµ‹è¯•KFè·Ÿè¸ªæ€§èƒ½
 
 sub_l1_dir  = dir( maindir );
-% Ò»¼¶Ä¿Â¼
+% ä¸€çº§ç›®å½•
 for l1_i = 1 : length( sub_l1_dir )
-    if( isequal( sub_l1_dir(l1_i).name, '.' )|| isequal( sub_l1_dir(l1_i).name, '..')||  ~sub_l1_dir(l1_i).isdir)               % Èç¹û²»ÊÇÄ¿Â¼ÔòÌø¹ı
+    if( isequal( sub_l1_dir(l1_i).name, '.' )|| isequal( sub_l1_dir(l1_i).name, '..')||  ~sub_l1_dir(l1_i).isdir)               % å¦‚æœä¸æ˜¯ç›®å½•åˆ™è·³è¿‡
         continue;
     end
     for l2_i = 1 : 1
         subdirpath = fullfile( maindir, sub_l1_dir(l1_i).name, '*.critical' );
-        txt_dir = dir( subdirpath );               % ×ÓÎÄ¼ş¼ĞÏÂÕÒºó×ºÎªtxtµÄÎÄ¼ş
+        txt_dir = dir( subdirpath );               % å­æ–‡ä»¶å¤¹ä¸‹æ‰¾åç¼€ä¸ºtxtçš„æ–‡ä»¶
         for txt_i = 1:length(txt_dir)
             vision_data_addr = fullfile( maindir, sub_l1_dir(l1_i).name, txt_dir(txt_i).name);
             raw_log_addr = [vision_data_addr(1:end-8), 'log-speed.ini'];
             fid_vision_log = fopen(vision_data_addr, 'r');
-            fid_raw_log = fopen(raw_log_addr, 'r'); % Ô­Ê¼µÄlog
+            fid_raw_log = fopen(raw_log_addr, 'r'); % åŸå§‹çš„log
             if ~fid_vision_log || ~fid_raw_log
                 break;
             end
             
-           %% ³õÊ¼»¯
-            ipm_step = 1; % ²½³¤
+           %% åˆå§‹åŒ–
+            ipm_step = 1; % æ­¥é•¿
             is_first_read_timestamp = 1;
             time_start = 0;             
             speed_cur = 0;
             radar_data = [0  0 0 0]';
             radar_ttc = 0;
-            % Á¿²âÊı¾İ
+            % é‡æµ‹æ•°æ®
             struct_speed.data = 0;
             struct_speed.counter = 0;
-            speed_update = 0; % ĞÂµÄspeedÊı¾İ¸üĞÂ
+            speed_update = 0; % æ–°çš„speedæ•°æ®æ›´æ–°
             radar_range_cur = 0;
             radar_vel_cur = 0;
-            %% ÂË²¨
+            %% æ»¤æ³¢
             is_first_read_camera_data = 1;
-            is_kf_init_ok = 0; % KFÊÇ·ñÒÑ¾­½øĞĞ³õÊ¼»¯
+            is_kf_init_ok = 0; % KFæ˜¯å¦å·²ç»è¿›è¡Œåˆå§‹åŒ–
             is_first_radar_data = 1;
-            save_i_index = 0; % Êı¾İ´æ´¢¼ÆÊı
+            save_i_index = 0; % æ•°æ®å­˜å‚¨è®¡æ•°
 
             dv_filter = 0;
             is_first_vision_range = 1;
             fcw_state = 0;
 
-            %% Ö÷Ñ­»·Ïà¹Ø±äÁ¿
+            %% ä¸»å¾ªç¯ç›¸å…³å˜é‡
             is_first_read_legal_data = 1;
-            image_frame_id_pre = 0; % ÉÏÒ»´Î¼ÆËãÊ±ºòimage frame index ÓÃÓÚ¼ÆËãdt
-            image_frame_T = 5*60/7744; % Á½Ö¡Í¼Æ¬Ö®¼äµÄdt  Ò»¸öÊÓÆµ5min£¬²î²»¶àÊÇ7744Ö¡
-            mobileye_fcw_state = 0; % mobileye fcw state  1£ºwarning
-            index_of_target_pre = 0; % ÉÏÒ»Ö¡Ä¿±ê³µÁ¾µÄID
-            is_new_target = 0; % ÊÇ·ñÊÇĞÂÄ¿±ê³µÁ¾            
-            fcw_counter = 0; % Âú×ã´¥·¢Ìõ¼ş¼ÆÊı
+            image_frame_id_pre = 0; % ä¸Šä¸€æ¬¡è®¡ç®—æ—¶å€™image frame index ç”¨äºè®¡ç®—dt
+            image_frame_T = 5*60/7744; % ä¸¤å¸§å›¾ç‰‡ä¹‹é—´çš„dt  ä¸€ä¸ªè§†é¢‘5minï¼Œå·®ä¸å¤šæ˜¯7744å¸§
+            mobileye_fcw_state = 0; % mobileye fcw state  1ï¼šwarning
+            index_of_target_pre = 0; % ä¸Šä¸€å¸§ç›®æ ‡è½¦è¾†çš„ID
+            is_new_target = 0; % æ˜¯å¦æ˜¯æ–°ç›®æ ‡è½¦è¾†            
+            fcw_counter = 0; % æ»¡è¶³è§¦å‘æ¡ä»¶è®¡æ•°
             %% IMU
-            is_imu_match_camera = 0; % imuºÍcameraÊÇ·ñÆ¥Åä
+            is_imu_match_camera = 0; % imuå’Œcameraæ˜¯å¦åŒ¹é…
             gyro_fliter = [0 0 0]';
             acc_fliter = [0 0 0]';
             vibe_gyro_fliter = [0 0 0]';
             vibe_acc_fliter = [0 0 0]';
-            struct_gyro_d.data = [0, 0, 0]'; % ¼ÇÂ¼Á½Ö¡Ö®¼ä²ÉÑùµ½µÄimuÊı¾İ£¬ÓÃÓÚÇóÆ½¾ù
+            struct_gyro_d.data = [0, 0, 0]'; % è®°å½•ä¸¤å¸§ä¹‹é—´é‡‡æ ·åˆ°çš„imuæ•°æ®ï¼Œç”¨äºæ±‚å¹³å‡
             struct_gyro_d.counter = 0;            
             %% ADRC
             is_ADRC_init_OK = 0;
             z_residual = [0 ,0]'; % range  range_horizon
-          %% Ö÷Ñ­»·
-            read_txt_line = 0; % ¶ÁÈ¡µ½ÎÄ¼şµÄĞĞÊı£¬Èç¹ûÊÇ<100  ÔòÎª¿ÕÎÄ¼ş
+          %% ä¸»å¾ªç¯
+            read_txt_line = 0; % è¯»å–åˆ°æ–‡ä»¶çš„è¡Œæ•°ï¼Œå¦‚æœæ˜¯<100  åˆ™ä¸ºç©ºæ–‡ä»¶
             
             tt_state = feof(fid_vision_log);
-            while ~feof(fid_vision_log) && ~feof(fid_raw_log) % ¶ÁÈ¡logÊı¾İ    
+            while ~feof(fid_vision_log) && ~feof(fid_raw_log) % è¯»å–logæ•°æ®    
                 lineData = fgetl(fid_vision_log);
                 if lineData == -1
                     break;
@@ -90,15 +90,15 @@ for l1_i = 1 : length( sub_l1_dir )
                     read_txt_line = read_txt_line + 1;
                 end
                 exp1 = ',';
-                str_line_raw = regexp(lineData, exp1, 'split'); %ÒÔ¿Õ¸ñÎªÌØÕ÷·Ö¸î×Ö·û´®
-                str_frame_index = str2num(str_line_raw{1,1}); % Ã¿Ò»·ùÍ¼¶ÔÓ¦3Ö¡ 0:detect_vehicle_record    1:radar-recod  2£ºmobileye
-                % ÎªÁË»­Í¼·½±ã  »ñÈ¡³õÊ¼Ê±¿ÌµÄÊ±¼ä
+                str_line_raw = regexp(lineData, exp1, 'split'); %ä»¥ç©ºæ ¼ä¸ºç‰¹å¾åˆ†å‰²å­—ç¬¦ä¸²
+                str_frame_index = str2num(str_line_raw{1,1}); % æ¯ä¸€å¹…å›¾å¯¹åº”3å¸§ 0:detect_vehicle_record    1:radar-recod  2ï¼šmobileye
+                % ä¸ºäº†ç”»å›¾æ–¹ä¾¿  è·å–åˆå§‹æ—¶åˆ»çš„æ—¶é—´
                 if is_first_read_timestamp
                     time_start = str2num(str_line_raw{1,2}); 
                     is_first_read_timestamp = 0;
                 end
 
-                % ¶ÁÈ¡mobileye Êı¾İ
+                % è¯»å–mobileye æ•°æ®
                 if(str_frame_index == 2)
                     mobileye_fcw_state = 1;
                 end
@@ -117,7 +117,7 @@ for l1_i = 1 : length( sub_l1_dir )
                 
                 % 0:   detect_vehicle_record 
                 if(str_frame_index == 0)
-                    % ²ÉÓÃ index:0 ¶ÁÈ¡Êı¾İ        
+                    % é‡‡ç”¨ index:0 è¯»å–æ•°æ®        
                     image_timestamp_cur = str2num(str_line_raw{1,2}) - time_start; 
                     image_frame_id = str2num(str_line_raw{1,4+2});
                     vison_range_raw = str2num(str_line_raw{1,10+2});
@@ -125,7 +125,7 @@ for l1_i = 1 : length( sub_l1_dir )
                     index_of_target = str2num(str_line_raw{1,2+2});
                     ttc_raw = str2num(str_line_raw{1,14+2}); 
                     
-                  %% ¶ÁÈ¡log.txtÊı¾İ£¨³µËÙ+imu£©
+                  %% è¯»å–log.txtæ•°æ®ï¼ˆè½¦é€Ÿ+imuï¼‰
                      is_imu_match_camera = 0;
                      while ~is_imu_match_camera && ~feof(fid_raw_log)
                         lineData_raw_log = fgetl(fid_raw_log);
@@ -133,7 +133,7 @@ for l1_i = 1 : length( sub_l1_dir )
                             break;
                         end
                         exp1 = ' ';
-                        str_line_log_raw = regexp(lineData_raw_log, exp1, 'split'); %ÒÔ¿Õ¸ñÎªÌØÕ÷·Ö¸î×Ö·û´®
+                        str_line_log_raw = regexp(lineData_raw_log, exp1, 'split'); %ä»¥ç©ºæ ¼ä¸ºç‰¹å¾åˆ†å‰²å­—ç¬¦ä¸²
                         time_s = str2num(str_line_log_raw{1,1});
                         time_us = str2num(str_line_log_raw{1,2});
                         time_log = time_s + time_us *1e-6 - time_start;
@@ -141,11 +141,11 @@ for l1_i = 1 : length( sub_l1_dir )
                         % speed
                         if strcmp(str_line_data_flag, 'brake_signal')
                             speed_cur = str2num(str_line_log_raw{1, 24})/3.6; 
-                            % ÅĞ¶ÏÊ±¼ä´ÁÊÇ·ñÒÑ¾­Æ¥ÅäÉÏ
+                            % åˆ¤æ–­æ—¶é—´æˆ³æ˜¯å¦å·²ç»åŒ¹é…ä¸Š
                             time_imu = time_log;
                             dt_imu_camera = time_log - image_timestamp_cur;
                             if dt_imu_camera>0 || abs(dt_imu_camera)<0.2
-                                is_imu_match_camera = 1; % Êı¾İÒÑ¾­Æ¥Åä
+                                is_imu_match_camera = 1; % æ•°æ®å·²ç»åŒ¹é…
                             else
                                 continue;
                             end                            
@@ -157,7 +157,7 @@ for l1_i = 1 : length( sub_l1_dir )
                         is_first_read_legal_data = 0;
                     end 
 
-                  %%  ÂË²¨          
+                  %%  æ»¤æ³¢          
                     if(~is_kf_init_ok)
                         acc_t = 0; % target vehicle
                         speed_t = 0;
@@ -170,7 +170,7 @@ for l1_i = 1 : length( sub_l1_dir )
                         Q = diag([25,  20, 4, 3, 3]);
                         R = diag([10, 1]);   
                         
-                        % Ë®Æ½
+                        % æ°´å¹³
                         acc_h = 0; % target vehicle
                         speed_h = 0;       
                         vison_range_h_filter = vision_horizon;
@@ -181,7 +181,7 @@ for l1_i = 1 : length( sub_l1_dir )
                         is_kf_init_ok = 1;
                     end
                     
-                    % ÅĞ¶Ï target ID£¬À´È·ÈÏÊÇ·ñÊÇÒ»Á¾ĞÂµÄ³µ
+                    % åˆ¤æ–­ target IDï¼Œæ¥ç¡®è®¤æ˜¯å¦æ˜¯ä¸€è¾†æ–°çš„è½¦
                     if (index_of_target_pre ~= index_of_target)
                         is_new_target = 1;
                     else
@@ -190,10 +190,10 @@ for l1_i = 1 : length( sub_l1_dir )
                     index_of_target_pre = index_of_target;                    
                     dt = image_timestamp_cur - image_timestamp_pre;
                     image_timestamp_pre = image_timestamp_cur; 
-                    % ÎªÁË´¦Àí³¤Ê±¼äÃ»ÓĞÓĞĞ§Ç°³µµÄÎÊÌâ dtÌ«´óÔòÖØÖÃÂË²¨
-                    % ¶ÔÓÚĞÂÄ¿±ê£¬Ò²ÒªÖØÖÃÂË²¨
+                    % ä¸ºäº†å¤„ç†é•¿æ—¶é—´æ²¡æœ‰æœ‰æ•ˆå‰è½¦çš„é—®é¢˜ dtå¤ªå¤§åˆ™é‡ç½®æ»¤æ³¢
+                    % å¯¹äºæ–°ç›®æ ‡ï¼Œä¹Ÿè¦é‡ç½®æ»¤æ³¢
                     if(dt > 0.3 || is_new_target)
-                        % dt >1 ÔòÖØÖÃ
+                        % dt >1 åˆ™é‡ç½®
                         acc_t = 0; % target vehicle
                         speed_t = 0;
                         acc_s = 0; % host vehicle
@@ -205,7 +205,7 @@ for l1_i = 1 : length( sub_l1_dir )
                         Q = diag([25,  20, 4, 3, 3]);
                         R = diag([10, 1]); 
                         
-                        % Ë®Æ½
+                        % æ°´å¹³
                         acc_h = 0; % target vehicle
                         speed_h = 0;   
                         vison_range_h_filter = vision_horizon;
@@ -216,15 +216,15 @@ for l1_i = 1 : length( sub_l1_dir )
                         is_kf_init_ok = 1;
       
                     else
-                        % µÍÍ¨ÂË²¨´¦Àí 
-                        filt_hz = 0.5; % ÎªÁË¿ØÖÆ²¨¶¯  »ù±¾0.7ÊÇ¼«ÏŞ£¨>1Ö®ºó¾Í»áÒıÈë³µÁ¾²¨¶¯µ¼ÖÂµÄ³µËÙ±ä»¯£©
+                        % ä½é€šæ»¤æ³¢å¤„ç† 
+                        filt_hz = 0.5; % ä¸ºäº†æ§åˆ¶æ³¢åŠ¨  åŸºæœ¬0.7æ˜¯æé™ï¼ˆ>1ä¹‹åå°±ä¼šå¼•å…¥è½¦è¾†æ³¢åŠ¨å¯¼è‡´çš„è½¦é€Ÿå˜åŒ–ï¼‰
                         [ vison_range_filter ] = fun_LowpassFilter( vison_range_filter, vison_range_raw, dt, filt_hz ); 
                         
                         filt_hz = 1; 
                         [ vison_range_h_filter ] = fun_LowpassFilter( vison_range_h_filter, vision_horizon, dt, filt_hz ); 
 
-                        % KF ÂË²¨
-                        % X = [d, vs, vt]' ³µ¾à£¬±¾³µËÙ¶È£¬Ä¿±ê³µËÙ
+                        % KF æ»¤æ³¢
+                        % X = [d, vs, vt]' è½¦è·ï¼Œæœ¬è½¦é€Ÿåº¦ï¼Œç›®æ ‡è½¦é€Ÿ
                         % z = [vision_range car_speed]                   
                         z = [vison_range_filter  speed_s]';
                         F = [1  dt  -dt  0.5*dt^2 -0.5*dt^2;
@@ -236,7 +236,7 @@ for l1_i = 1 : length( sub_l1_dir )
                               0 0 1 0 0 ];
                         [Xk, Pk, z_residual] = fun_KF_resdiual(Xk, Pk, z, Q, R, F, H);
                         
-                        % Ë®Æ½
+                        % æ°´å¹³
                         z_h = [vison_range_h_filter]';
                         F_h = [1  dt   0.5*dt^2
                              0   1    dt  ;
@@ -246,7 +246,7 @@ for l1_i = 1 : length( sub_l1_dir )
                         
                     end
                     
-                  %% FCW´¥·¢Âß¼­ÅĞ¶Ï  
+                  %% FCWè§¦å‘é€»è¾‘åˆ¤æ–­  
                     Vt = Xk(2);
                     Vs = Xk(3);
                     acc_t = Xk(4);
@@ -256,18 +256,18 @@ for l1_i = 1 : length( sub_l1_dir )
                     acc_relative = acc_t - acc_s;
                     relative_data = [range_cur, vel_relative, acc_relative]';
                     
-                    % Ë®Æ½
+                    % æ°´å¹³
                     horizon_range = Xk_h(1);
                     horizon_vel = Xk_h(2);
                     
-                    % ¼ÆËãttc 
+                    % è®¡ç®—ttc 
                     if abs(vel_relative) >0.2
                         ttc = abs(range_cur/vel_relative);
                     else
                         ttc = -1;
                     end
-                    % fcw ´¥·¢Âß¼­ ttc<4, Ïà¶Ô³µ¾àÀë<20, ³µËÙ>40/3.6, Ë®Æ½¾àÀë<1.2, ÀÛ¼ÆÂú×ã5Ö¡
-                    % ³õ²½ÅĞ¶Ïmobileye¸æ¾¯µÄ³¡¾°¶¼ÊÇ±È½Ï¸ßËÙµÄ
+                    % fcw è§¦å‘é€»è¾‘ ttc<4, ç›¸å¯¹è½¦è·ç¦»<20, è½¦é€Ÿ>40/3.6, æ°´å¹³è·ç¦»<1.2, ç´¯è®¡æ»¡è¶³5å¸§
+                    % åˆæ­¥åˆ¤æ–­mobileyeå‘Šè­¦çš„åœºæ™¯éƒ½æ˜¯æ¯”è¾ƒé«˜é€Ÿçš„
                     if ttc >0
                         tt_horizon = abs(horizon_range + horizon_vel*ttc);
                     else
@@ -286,13 +286,13 @@ for l1_i = 1 : length( sub_l1_dir )
                         fcw_state = 0;
                     end
                     
-                  %% ±£´æÊı¾İ
+                  %% ä¿å­˜æ•°æ®
                     time_cur = image_timestamp_cur;
                     save_i_index = save_i_index + 1;
 %                     save_Xk(:, save_i_index) = [time_cur; Xk];
                     save_Xk(:, save_i_index) = [time_cur; relative_data];
                     save_Xk_h(:, save_i_index) = [time_cur; Xk_h];    
-                    save_tt_horizon(:, save_i_index) = [time_cur; tt_horizon];   % ºáÏò¾àÀëÔ¤²â
+                    save_tt_horizon(:, save_i_index) = [time_cur; tt_horizon];   % æ¨ªå‘è·ç¦»é¢„æµ‹
                     save_vision_raw(:, save_i_index)= [time_cur; vison_range_raw];
                     save_ttc(:, save_i_index) = [time_cur; ttc ];
                     save_ttc_raw(:, save_i_index) = [time_cur; ttc_raw ];
@@ -307,31 +307,31 @@ for l1_i = 1 : length( sub_l1_dir )
                     save_radar_ttc(:, save_i_index) = [time_cur; radar_ttc];  
                     save_P(:, save_i_index) = [time_cur; sqrt(Pk(1,1)); sqrt(Pk(2,2)); sqrt(Pk(3,3))];
                     save_z_residual(:, save_i_index) = [time_cur;z_residual];   
-                    % ÇåÁã
+                    % æ¸…é›¶
                     mobileye_fcw_state = 0;
                 end        
             end
             
-        % ´óÓÚ100 ²Å²»ÊÇ¿ÕÎÄ¼ş
+        % å¤§äº100 æ‰ä¸æ˜¯ç©ºæ–‡ä»¶
         if read_txt_line >10             
             h = figure();
 %             figure('visible','off')   
             set(h,'outerposition',get(0,'screensize'));
-            % ³µ¾à
+            % è½¦è·
             ax1 = subplot(3,1,1);
-            plot(save_vision_raw(1,:), save_vision_raw(2,:), '.'); % vision range Á¿²â
+            plot(save_vision_raw(1,:), save_vision_raw(2,:), '.'); % vision range é‡æµ‹
             hold on;
             plot(save_Xk(1,:), save_Xk(2,:), '.'); % range-estimate
             plot(save_radar_data(1,:), save_radar_data(2,:), '.'); % radar-range
-%             plot(save_tt_horizon(1,:), save_tt_horizon(2,:)*10, '.'); % Ë®Æ½Ô¤²â¾àÀë
+%             plot(save_tt_horizon(1,:), save_tt_horizon(2,:)*10, '.'); % æ°´å¹³é¢„æµ‹è·ç¦»
             grid on;
             legend({'vision-range-measure-raw','range-estimate', 'radar-range'},'Location','northeast','FontSize',10);
             legend('boxoff')
             vision_data_addr_t = vision_data_addr;
-            str_name = sprintf('logÎÄ¼ş: %s \n ³µ¾à ', vision_data_addr_t);
+            str_name = sprintf('logæ–‡ä»¶: %s \n è½¦è· ', vision_data_addr_t);
             title(str_name);
             
-            % ËÙ¶È & ¼ÓËÙ¶È &±¾³µËÙ¶È
+            % é€Ÿåº¦ & åŠ é€Ÿåº¦ &æœ¬è½¦é€Ÿåº¦
             ax2 = subplot(3,1,2);
             plot(save_Xk(1,:), save_Xk(3, :), '.'); % vel estimation
             hold on;
@@ -343,7 +343,7 @@ for l1_i = 1 : length( sub_l1_dir )
             grid on;
             legend({'vel-estimation','acc-estimation', 'vel-radar', 'speed-car', 'vision-horizon*10', 'vision-horizon-vel*10'},'Location','northeast','FontSize',10);
             legend('boxoff')
-            title('ËÙ¶È&¼ÓËÙ¶È&ºáÏò¾àÀë&±¾³µËÙ¶È')
+            title('é€Ÿåº¦&åŠ é€Ÿåº¦&æ¨ªå‘è·ç¦»&æœ¬è½¦é€Ÿåº¦')
             
             % ttc fcw
             ax3 = subplot(3,1,3);
@@ -361,19 +361,19 @@ for l1_i = 1 : length( sub_l1_dir )
             str_name = sprintf('ttc&fcw');
             ylim([-1, 10]);
             title(str_name);
-            linkaxes([ax1,ax2,ax3], 'x'); % Í¬²½×ÓÍ¼µÄ×ø±êÖá
+            linkaxes([ax1,ax2,ax3], 'x'); % åŒæ­¥å­å›¾çš„åæ ‡è½´
             
-            % ±£´æfigure
+            % ä¿å­˜figure
             filename=[vision_data_addr_t, '--KF.png'];
             saveas(h,filename)
             close(h)   
             
-           %% ·ÖÎöKF
+           %% åˆ†æKF
 %             h = figure();
 %             set(h,'outerposition',get(0,'screensize'));
-%             % ³µ¾à
+%             % è½¦è·
 %             ax1 = subplot(2,1,1);
-%             plot(save_vision_raw(1,:), save_vision_raw(2,:), '.'); % vision range Á¿²â
+%             plot(save_vision_raw(1,:), save_vision_raw(2,:), '.'); % vision range é‡æµ‹
 %             hold on;
 %             plot(save_Xk(1,:), save_Xk(2,:), '.'); % range-estimate
 %             plot(save_radar_data(1,:), save_radar_data(2,:), '.'); % radar-range
@@ -381,7 +381,7 @@ for l1_i = 1 : length( sub_l1_dir )
 %             legend({'vision-range-measure-raw','range-estimate', 'radar-range'},'Location','northeast','FontSize',10);
 %             legend('boxoff')
 %             vision_data_addr_t = vision_data_addr;
-%             str_name = sprintf('logÎÄ¼ş: %s \n ³µ¾à ', vision_data_addr_t);
+%             str_name = sprintf('logæ–‡ä»¶: %s \n è½¦è· ', vision_data_addr_t);
 %             title(str_name);
 %             
 %             ax2 = subplot(2,1,2);
@@ -392,22 +392,22 @@ for l1_i = 1 : length( sub_l1_dir )
 %             grid on;
 %             legend({'z-resdiual','range-P', 'range-P'},'Location','northeast','FontSize',10);
 %             legend('boxoff')
-%             title('²Ğ²î');
-%             linkaxes([ax1,ax2], 'x'); % Í¬²½×ÓÍ¼µÄ×ø±êÖá
+%             title('æ®‹å·®');
+%             linkaxes([ax1,ax2], 'x'); % åŒæ­¥å­å›¾çš„åæ ‡è½´
 %             
-%             % ±£´æfigure
+%             % ä¿å­˜figure
 %             filename=[vision_data_addr_t, '--residual.png'];
 %             saveas(h,filename)
 %             close(h)    
             
 %             exp1 = '\';
-%             str_line_raw = regexp(vision_data_addr_t, exp1, 'split'); %ÒÔ¿Õ¸ñÎªÌØÕ÷·Ö¸î×Ö·û´®
+%             str_line_raw = regexp(vision_data_addr_t, exp1, 'split'); %ä»¥ç©ºæ ¼ä¸ºç‰¹å¾åˆ†å‰²å­—ç¬¦ä¸²
 %             str_frame_index = str2num(str_line_raw{1,1}); 
 %             filename=[str_line_raw{1,6}, '\', str_line_raw{1,7}, '--KF.png'];
 %             saveas(h,filename)
 %             close(h)  
 
-            % ±£´æ¼ÆËã½á¹ûtxt
+            % ä¿å­˜è®¡ç®—ç»“æœtxt
         %     NUM = length(save_Xk);
         %     est_log_name = ['./data/est_result_new/', log_ID, '.log_KF_estimation.txt'];
         %     fp = fopen(est_log_name, 'wt');
@@ -429,34 +429,34 @@ end
 
 %% plot
 % figure()
-% plot(save_vision_raw(1,:), save_vision_raw(2,:)); % vision range Á¿²â
+% plot(save_vision_raw(1,:), save_vision_raw(2,:)); % vision range é‡æµ‹
 % hold on;
 % plot(save_Xk(1,:), save_Xk(2,:)); % range-estimate
-% plot(save_radar(1,:), save_radar(2,:)); % À×´ï
+% plot(save_radar(1,:), save_radar(2,:)); % é›·è¾¾
 % grid on;
 % legend('vision-range-measure-raw','range-estimate','radar-range');
-% str_name = sprintf('³µ¾à ');
+% str_name = sprintf('è½¦è· ');
 % title(str_name);
 % 
-% % ËÙ¶È
+% % é€Ÿåº¦
 % figure()
 % plot(save_relative_v(1,:), save_relative_v(2,:)); % vel estimation
 % hold on;
-% plot(save_radar(1,:), save_radar(3,:)); % À×´ï²âÁ¿Ïà¶ÔËÙ¶È
-% % plot(save_dv_radar_filter(1,:), save_dv_radar_filter(2,:)); % À×´ïÊı¾İÖ±½ÓÎ¢·ÖµÄËÙ¶È
-% % plot(save_dv_filter(1,:), save_dv_filter(2,:)); % Ö±½ÓÎ¢·ÖºóµÍÍ¨ÂË²¨µÄËÙ¶È
+% plot(save_radar(1,:), save_radar(3,:)); % é›·è¾¾æµ‹é‡ç›¸å¯¹é€Ÿåº¦
+% % plot(save_dv_radar_filter(1,:), save_dv_radar_filter(2,:)); % é›·è¾¾æ•°æ®ç›´æ¥å¾®åˆ†çš„é€Ÿåº¦
+% % plot(save_dv_filter(1,:), save_dv_filter(2,:)); % ç›´æ¥å¾®åˆ†åä½é€šæ»¤æ³¢çš„é€Ÿåº¦
 % grid on;
-% legend('vel-estimation', 'radar-vel', 'dv-À×´ïÎ¢·ÖºóµÍÍ¨', 'dv-Î¢·ÖºóµÍÍ¨ÂË²¨');
-% title('ËÙ¶È');
+% legend('vel-estimation', 'radar-vel', 'dv-é›·è¾¾å¾®åˆ†åä½é€š', 'dv-å¾®åˆ†åä½é€šæ»¤æ³¢');
+% title('é€Ÿåº¦');
 % 
-% % ¼ÓËÙ¶È
+% % åŠ é€Ÿåº¦
 % figure()
 % plot(save_Xk(1,:), save_Xk(4,:)); % acc estimation
 % hold on;
-% plot(save_radar(1,:), save_radar(4,:)); % À×´ï²âÁ¿acc
+% plot(save_radar(1,:), save_radar(4,:)); % é›·è¾¾æµ‹é‡acc
 % grid on;
 % legend('acc-estimation', 'radar-acc');
-% title('¼ÓËÙ¶È');
+% title('åŠ é€Ÿåº¦');
 % 
 % % ttc fcw
 % figure()
